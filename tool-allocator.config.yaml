@@ -1,0 +1,19 @@
+# tool-allocator 配置文件
+
+# Agent 定义（自动从 opencode.json 读取，可手动覆盖）
+agents:
+  - name: "Agent名称"
+    tags: ["frontend", "backend", "verification"]
+
+# 自定义匹配规则
+rules:
+  # 工具名称 → 匹配标签
+  "frontend-design": ["frontend", "design"]
+  "playwright": ["verification", "frontend"]
+  "memory": ["*"]  # * 表示所有人
+  "search": ["*"]
+  "lark-*": ["*"]
+
+# 排除的工具（不分配）
+exclude:
+  - "chrome-cdp"  # 与 playwright 重复
