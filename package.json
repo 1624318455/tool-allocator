@@ -1,0 +1,37 @@
+{
+  "name": "tool-allocator",
+  "version": "1.2.0",
+  "description": "Automatically manages MCP/Skill distribution across agents. Use when: installing new MCP/Skill and needing allocation, checking tool usage, viewing available tools, or reviewing who uses which tool.",
+  "main": "scripts/index.js",
+  "scripts": {
+    "sync": "node scripts/index.js sync",
+    "list": "node scripts/index.js list",
+    "check": "node scripts/index.js check",
+    "debug": "node scripts/index.js debug"
+  },
+  "keywords": [
+    "opencode",
+    "tool-management",
+    "agent",
+    "workflow",
+    "automation",
+    "mcp",
+    "skill",
+    "allocation"
+  ],
+  "author": "memeflyfly",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/memeflyfly/tool-allocator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/memeflyfly/tool-allocator/issues"
+  },
+  "homepage": "https://github.com/memeflyfly/tool-allocator#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

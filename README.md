@@ -1,91 +1,90 @@
-# tool-allocator
+# Tool Allocator
 
-> 工具分配管家 — 让每个 Agent 知道该用什么工具
+> The tool allocation manager — helps every Agent know which tools to use
 
-## 一句话说明
+## Quick Description
 
-自动化管理 MCP/Skill 的分配，将本地工具分配给合适的 Agent，解决"工具装了但没人用"的痛点。
+Automatically manages MCP/Skill distribution across agents. Solves the problem of "installed tools but no one uses them" by intelligently matching tools to the right agents based on their roles.
 
-## 谁需要这个？
+## Who Is This For?
 
-| 你的情况 | 推荐度 |
-|----------|--------|
-| 安装了 5+ 个 MCP 或 Skill | ⭐⭐⭐⭐⭐ |
-| 配置了多个 Agent（BA、Designer、Architect、Coder 等） | ⭐⭐⭐⭐⭐ |
-| 经常安装新工具，每次手动改配置太麻烦 | ⭐⭐⭐⭐ |
-| Agent 不知道本地有哪些工具可用 | ⭐⭐⭐⭐ |
-| 团队多人协作，需要统一工具分配标准 | ⭐⭐⭐⭐ |
-| 只装了几个工具，够用 | ⭐ |
-| 单 Agent 工作，不需要分配 | ⭐ |
+| Your Situation | Recommendation |
+|----------------|----------------|
+| Installed 5+ MCPs or Skills | ⭐⭐⭐⭐⭐ |
+| Configured multiple Agents (BA, Designer, Architect, Coder) | ⭐⭐⭐⭐⭐ |
+| Frequently install new tools, manual config is tedious | ⭐⭐⭐⭐ |
+| Agents don't know what tools are available | ⭐⭐⭐⭐ |
+| Team collaboration needs unified tool standards | ⭐⭐⭐⭐ |
+| Only a few tools, enough for use | ⭐ |
+| Single Agent, no distribution needed | ⭐ |
 
-## 安装方法
+## Installation
 
 ```bash
-# 方法一：使用 cocoloop
+# Method 1: Using cocoloop
 /cocoloop install tool-allocator
 
-# 方法二：手动安装
-# 将此文件夹复制到 ~/.opencode/skills/tool-allocator/
+# Method 2: Manual install
+# Copy this folder to ~/.opencode/skills/tool-allocator/
 ```
 
-## 使用方法
+## Quick Start
 
 ```bash
-# 进入脚本目录
+# Navigate to scripts directory
 cd ~/.opencode/skills/tool-allocator/scripts
 
-# 同步所有工具分配
+# Sync all tool allocations
 node index.js sync
 
-# 查看当前分配
+# View current allocation
 node index.js list
 
-# 检查闲置工具
+# Check unused tools
 node index.js check
 ```
 
-## 工作流程
+## How It Works
 
 ```
-安装新工具
+Install new tool
     ↓
-运行 node index.js sync
+Run: node index.js sync
     ↓
-自动分析工具能力
+Auto-analyze tool capabilities
     ↓
-匹配到合适的 Agent
+Match to appropriate Agents
     ↓
-更新配置文件
+Update config files
     ↓
-Agent 重新加载会话
+Agent reloads session
 ```
 
-## 输出示例
+## Example Output
 
 ```
-✅ 工具分配同步完成
+✅ Tool allocation sync complete
 
-📊 分配概览：
-   ┌────────────────────────┬────────────────────────┐
-   │ 工具                   │ 分配给                 │
-   ├────────────────────────┼────────────────────────┤
-   │ frontend-design        │ Coder                  │
-   │ vercel-react-best-... │ Architect, Coder       │
-   │ ui-ux-pro-max         │ Designer               │
-   │ memory                 │ 所有人                 │
-   └────────────────────────┴────────────────────────┘
+📊 Allocation Overview:
+   ┌─────────────────────────┬────────────────────┐
+   │ Tool                    │ Assigned To        │
+   ├─────────────────────────┼────────────────────┤
+   │ playwright              │ AIUIUX, AITA, AICA │
+   │ supabase                │ AITA, AICA         │
+   │ memory                  │ everyone           │
+   └─────────────────────────┴────────────────────┘
 
-🔄 已更新：
-   ✓ Agent/Coder.md
-   ✓ Agent/Designer.md
+🔄 Updated:
+   ✓ Agent/AIBA.md
+   ✓ Agent/AIUIUX.md
    ✓ .opencode_memory.md
 
-💡 提示：重新加载会话让 Agent 感知变化
+💡 Tip: Reload session for agents to detect changes
 ```
 
-## 配置说明
+## Configuration
 
-编辑 `tool-allocator.config.yaml` 自定义分配规则：
+Edit `tool-allocator.config.yaml` to customize allocation:
 
 ```yaml
 agents:
@@ -101,21 +100,53 @@ exclude:
   - "chrome-cdp"
 ```
 
-## 前提要求
+## Prerequisites
 
 - Node.js 16+
-- OpenCode 环境
-- 已安装 MCP 或 Skill
-- 已配置 Agent
+- OpenCode environment
+- Installed MCP or Skill
+- Configured Agents
 
-## 常见问题
+## Documentation Structure
 
-**Q: 会覆盖我的手动修改吗？**
-A: 不会。只更新"工具清单"部分，其他内容保持不变。
+```
+tool-allocator/
+├── SKILL.md              # Main skill file
+├── REFERENCES.md         # Quick reference
+├── references/
+│   ├── commands.md      # Detailed commands
+│   ├── config.md        # Configuration guide
+│   └── matching-rules.md
+├── examples/
+│   └── real-usage.md    # Real usage scenarios
+├── CHANGELOG.md         # Version history
+└── package.json
+```
 
-**Q: 分配错了怎么办？**
-A: 修改配置文件中的 `rules` 部分，然后重新运行 sync。
+## Commands
 
-## 贡献
+| Command | Description |
+|---------|-------------|
+| `sync` | Discover all tools and allocate to agents |
+| `list` | Show current tool allocation |
+| `check` | Find unused tools |
+| `debug` | Show agent role detection details |
 
-欢迎提交 Issue 和 PR！
+## FAQ
+
+**Q: Does it overwrite my manual changes?**
+A: No. Only updates the "tool list" section, other content remains unchanged.
+
+**Q: What if allocation is wrong?**
+A: Edit the `rules` section in config, then re-run sync.
+
+**Q: Custom agents supported?**
+A: Yes. Auto-reads from opencode.json or use manual config.
+
+## License
+
+MIT
+
+## Contributing
+
+Pull requests and issues are welcome!

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * tool-allocator - 主入口
- * 工具分配管家的命令行接口
+ * tool-allocator - Main entry point
+ * Tool allocation manager CLI
  */
 
 const path = require('path');
@@ -18,21 +18,20 @@ const {
     generateReport 
 } = require('./allocator');
 
-// 配置路径
+// Config paths
 const HOME = process.env.HOME || process.env.USERPROFILE;
 const CONFIG_DIR = path.join(HOME, '.config', 'opencode');
 const OPENCODE_JSON = path.join(CONFIG_DIR, 'opencode.json');
 const GLOBAL_MEMORY = path.join(CONFIG_DIR, 'skills', 'persistent-memory', 'data', '.opencode_memory.md');
 const AGENT_DIR = path.join(CONFIG_DIR, 'agent');
 
-// 加载配置文件
+// Load config file
 function loadConfig() {
     const configPath = path.join(__dirname, '..', 'tool-allocator.config.yaml');
     
     if (fs.existsSync(configPath)) {
         try {
             const content = fs.readFileSync(configPath, 'utf-8');
-            // 简单解析 YAML（实际应该用 yaml 库）
             return parseSimpleYaml(content);
         } catch (e) {
             console.error('Error loading config:', e.message);
@@ -42,7 +41,7 @@ function loadConfig() {
     return { agents: [], rules: {}, exclude: [] };
 }
 
-// 简单 YAML 解析
+// Simple YAML parser
 function parseSimpleYaml(content) {
     const result = { agents: [], rules: {}, exclude: [] };
     const lines = content.split('\n');
@@ -81,16 +80,14 @@ function parseSimpleYaml(content) {
     return result;
 }
 
-// 主同步函数
+// Main sync function
 function sync() {
-    console.log('🔍 正在发现工具...\n');
+    console.log('🔍 Discovering tools...\n');
     
-    // 发现工具和 Agent
     const discoveredTools = discoverTools(OPENCODE_JSON);
     const agents = discoverAgents(OPENCODE_JSON);
     const config = loadConfig();
 
-    // 加载 opencode.json 用于权限链分析
     let opencodeConfig = {};
     if (fs.existsSync(OPENCODE_JSON)) {
         try {
@@ -100,32 +97,24 @@ function sync() {
         }
     }
 
-    console.log(`📦 发现 ${discoveredTools.skills.length} 个 Skills`);
-    console.log(`📦 发现 ${discoveredTools.mcps.length} 个 MCPs`);
-    console.log(`👥 发现 ${agents.length} 个 Agents\n`);
+    console.log(`📦 Discovered ${discoveredTools.skills.length} Skills`);
+    console.log(`📦 Discovered ${discoveredTools.mcps.length} MCPs`);
+    console.log(`👥 Discovered ${agents.length} Agents\n`);
 
-    // 多维度 Agent 角色分析
-    console.log('🧠 正在多维度分析 Agent 角色...\n');
+    console.log('🧠 Analyzing Agent roles (multi-dimensional)...\n');
     const agentAnalysis = analyzeAllAgents(agents, AGENT_DIR, opencodeConfig);
-
-    // 调试：显示 Agent 角色提取
     debugAgentRoles(agentAnalysis);
 
-    // 分析工具
-    console.log('📊 正在分析工具能力...\n');
+    console.log('📊 Analyzing tool capabilities...\n');
     const analyzedTools = analyzeTools(discoveredTools);
 
-    // 匹配（使用多维度分析结果）
-    console.log('🎯 正在匹配工具到 Agent...\n');
+    console.log('🎯 Matching tools to agents...\n');
     const matchedTools = matchAllTools(analyzedTools, agentAnalysis, config);
 
-    // 检查闲置
     const { used, unused } = findUnusedTools(matchedTools, config);
 
-    // 更新配置
     const updateResults = [];
     
-    // 更新每个 Agent 的配置
     for (const agent of agents) {
         const agentPath = path.join(AGENT_DIR, `${agent.name}.md`);
         if (fs.existsSync(agentPath)) {
@@ -140,7 +129,6 @@ function sync() {
         }
     }
 
-    // 更新全局记忆
     if (fs.existsSync(GLOBAL_MEMORY)) {
         const matrix = generateAllocationMatrix(matchedTools);
         const memoryResult = updateGlobalMemory(GLOBAL_MEMORY, matrix);
@@ -150,14 +138,12 @@ function sync() {
         });
     }
 
-    // 生成报告
     const report = generateReport(matchedTools, agents, updateResults);
 
-    // 输出报告
-    console.log('✅ 工具分配同步完成\n');
-    console.log('📊 分配概览：');
+    console.log('✅ Tool allocation sync complete\n');
+    console.log('📊 Allocation Overview:');
     console.log('   ┌' + '─'.repeat(25) + '┬' + '─'.repeat(20) + '┐');
-    console.log('   │ ' + '工具'.padEnd(23) + ' │ ' + '分配给'.padEnd(18) + ' │');
+    console.log('   │ ' + 'Tool'.padEnd(23) + ' │ ' + 'Assigned To'.padEnd(18) + ' │');
     console.log('   ├' + '─'.repeat(25) + '┼' + '─'.repeat(20) + '┤');
     
     for (const item of report.matrix) {
@@ -167,14 +153,14 @@ function sync() {
     console.log('   └' + '─'.repeat(25) + '┴' + '─'.repeat(20) + '┘\n');
 
     if (unused.length > 0) {
-        console.log('⚠️  可能闲置的工具：');
+        console.log('⚠️  Potentially unused tools:');
         for (const item of unused) {
             console.log(`   - ${item.tool} ← ${item.reason}`);
         }
         console.log('');
     }
 
-    console.log('🔄 已更新：');
+    console.log('🔄 Updated:');
     for (const result of updateResults) {
         if (result.type === 'global-memory') {
             console.log(`   ✓ .opencode_memory.md`);
@@ -182,20 +168,19 @@ function sync() {
             console.log(`   ✓ Agent/${result.agent}.md`);
         }
     }
-    console.log('\n💡 提示：重新加载会话让 Agent 感知变化');
+    console.log('\n💡 Tip: Reload session for agents to detect changes');
 
     return report;
 }
 
-// 列出当前分配
+// List current allocation
 function list() {
-    console.log('📋 当前工具分配清单\n');
+    console.log('📋 Current Tool Allocation\n');
 
     const discoveredTools = discoverTools(OPENCODE_JSON);
     const agents = discoverAgents(OPENCODE_JSON);
     const config = loadConfig();
     
-    // 加载 opencode.json
     let opencodeConfig = {};
     if (fs.existsSync(OPENCODE_JSON)) {
         try {
@@ -214,7 +199,7 @@ function list() {
 
         console.log(`### ${agent.name}`);
         if (tools.length === 0) {
-            console.log('   (无分配)\n');
+            console.log('   (no tools assigned)\n');
         } else {
             for (const tool of tools) {
                 console.log(`   - ${tool.tool} (${tool.type})`);
@@ -224,15 +209,14 @@ function list() {
     }
 }
 
-// 检查闲置工具
+// Check for unused tools
 function check() {
-    console.log('🔍 工具使用检查\n');
+    console.log('🔍 Tool Usage Check\n');
 
     const discoveredTools = discoverTools(OPENCODE_JSON);
     const agents = discoverAgents(OPENCODE_JSON);
     const config = loadConfig();
     
-    // 加载 opencode.json
     let opencodeConfig = {};
     if (fs.existsSync(OPENCODE_JSON)) {
         try {
@@ -245,7 +229,7 @@ function check() {
     const matchedTools = matchAllTools(analyzedTools, agentAnalysis, config);
     const { used, unused } = findUnusedTools(matchedTools, config);
 
-    console.log('✅ 正在使用：');
+    console.log('✅ In Use:');
     for (const item of used) {
         const assignedAgents = item.recommendations.map(r => r.agent).join(', ');
         console.log(`   - ${item.tool} ← ${assignedAgents}`);
@@ -253,15 +237,15 @@ function check() {
     console.log('');
 
     if (unused.length > 0) {
-        console.log('⚠️  可能闲置：');
+        console.log('⚠️  Unused:');
         for (const item of unused) {
-            console.log(`   - ${item.tool} ← 从未被使用`);
+            console.log(`   - ${item.tool} ← never used`);
         }
         console.log('');
     }
 }
 
-// 命令行接口
+// CLI
 const command = process.argv[2] || 'sync';
 
 switch (command) {
@@ -277,12 +261,12 @@ switch (command) {
     case 'help':
     default:
         console.log(`
-tool-allocator - 工具分配管家
+tool-allocator - Tool Allocation Manager
 
-用法：
-  node index.js sync   # 同步所有工具分配
-  node index.js list   # 查看当前分配
-  node index.js check  # 检查闲置工具
+Usage:
+  node index.js sync   # Sync all tool allocations
+  node index.js list   # View current allocation
+  node index.js check  # Check unused tools
 `);
 }
 
