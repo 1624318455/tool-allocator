@@ -5,6 +5,20 @@ All notable changes to tool-allocator will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-18
+
+### Added
+- SKILL.md frontmatter enhancements:
+  - `capabilities` field with tool capability tags
+  - `keywords` field for search optimization
+  - `categories` field for classification
+- **Common Gotchas** section in SKILL.md (6 items)
+- **Edge Cases** section in SKILL.md (7 items)
+
+### Changed
+- Expanded description field with multiple trigger phrase variants
+- Improved trigger phrase coverage for better AI activation
+
 ## [1.2.0] - 2026-04-18
 
 ### Added

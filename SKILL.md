@@ -1,10 +1,17 @@
 ---
 name: tool-allocator
-description: Automatically manages MCP/Skill distribution across agents. Use when: installing new MCP/Skill and needing allocation, checking tool usage, viewing available tools, or reviewing who uses which tool.
-version: 1.2
+description: |
+  Automatically manages MCP/Skill distribution across agents. Use when: 
+  installing new MCP/Skill and needing allocation ("allocate new tool", "assign skill to agent"),
+  checking tool usage ("which tools are unused", "tools not being used", "unused tools"),
+  viewing available tools ("show me what tools", "what tools does", "tool distribution", "who has access to"),
+  reviewing who uses which tool ("tool allocation", "check agent capabilities", "what can AICA do"),
+  syncing allocations after installing new skill ("sync tool allocation", "update tool distribution"),
+  or managing agent tool access ("assign tools to", "which agent has", "tool permissions").
+version: 1.3
 created: 2026-04-18
 modified: 2026-04-18
-tags: [opencode, tool-management, agent, workflow, automation]
+tags: [opencode, tool-management, agent, workflow, automation, configuration]
 author: memeflyfly
 license: MIT
 repository: https://github.com/memeflyfly/tool-allocator
@@ -14,6 +21,22 @@ works-with:
   - opencode
   - claude-code
   - cursor
+capabilities:
+  - tool-discovery
+  - agent-analysis
+  - config-management
+  - allocation-sync
+keywords:
+  - mcp allocation
+  - skill distribution
+  - agent tools
+  - tool management
+  - tool allocation
+  - agent configuration
+categories:
+  - automation
+  - configuration
+  - tooling
 allowed-tools:
   - Read
   - Write
@@ -175,24 +198,24 @@ exclude:
 
 ---
 
-## FAQ
+## ⚠️ Common Gotchas
 
-**Q: Does it overwrite manual changes?**
-A: No. Only updates "tool list" section.
+- **Config file must be valid YAML** - Use https://www.yamllint.com to validate before editing
+- **Agent configs must exist before sync** - Create agents in opencode.json first
+- **Memory updates require persistent-memory skill** - Skip if skill not installed
+- **Sync only updates "## Tools" section** - Preserves all other content in agent MD files
+- **Glob/Search patterns are case-sensitive** - Match exact tool names
+- **Backups use .bak extension** - Don't confuse with original files
 
-**Q: Allocation wrong?**
-A: Edit config rules, re-run sync.
+## Edge Cases
 
-**Q: Custom agents supported?**
-A: Yes. Auto-reads from opencode.json.
-
----
-
-## Notes
-
-- Run `list` first to see current state
-- Sync auto-backs up files (.bak)
-- Run `check` periodically
+- **New agent with no MD file** → Skip silently, continue with other agents
+- **Tool already allocated** → Skip (no duplicates in allocation)
+- **Circular permissions** → Handled by max depth 3 in permission chain analysis
+- **Empty opencode.json** → Warn but continue with empty discovery
+- **MCP with no tools listed** → Skip MCP, continue with others
+- **Skill without SKILL.md** → Use folder name as fallback identifier
+- **Duplicate tool names** → First discovered takes precedence
 
 ---
 
@@ -203,6 +226,7 @@ A: Yes. Auto-reads from opencode.json.
 | 1.0 | 2026-04-12 | Initial release |
 | 1.1 | 2026-04-18 | English rewrite |
 | 1.2 | 2026-04-18 | Added metadata, references structure |
+| 1.3 | 2026-04-18 | Added gotchas, edge cases, capabilities, keywords |
 
 ---
 
