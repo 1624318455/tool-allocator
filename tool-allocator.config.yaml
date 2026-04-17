@@ -1,50 +1,68 @@
 # tool-allocator 配置文件
+# 说明：
+# - 通用型工具（memory, search, cocoloop等）不需要配置规则，主 agent 直接可用
+# - 特定领域工具需要配置匹配规则，分配给对应的子 Agent
 
-# Agent 定义（自动从 opencode.json 读取，可手动覆盖）
+# Agent 定义（覆盖 opencode.json 的自动检测）
 agents:
-  - name: "Agent名称"
-    tags: ["frontend", "backend", "verification"]
-
-# ====== 小说Agent匹配规则 ======
+  # 通用 Agent - 前端开发
+  - name: "AIUIUX"
+    tags: ["frontend", "design", "ui", "ux", "verification"]
+  - name: "AITA"
+    tags: ["frontend", "architecture", "backend", "database", "verification"]
+  - name: "AICA"
+    tags: ["frontend", "backend", "database", "coder", "verification"]
+  - name: "AIGameCA"
+    tags: ["frontend", "godot", "game", "coder"]
+  
+  # 小说 Agent - 需要特定 tags 才能匹配 novel-writer-skills
   - name: "AINovelAssist"
-    tags: ["novel", "writing", "novel-writing"]
-
+    tags: ["novel-writing", "novel", "writer"]
   - name: "AINovelEditorCritic"
-    tags: ["novel", "editing", "critique"]
+    tags: ["novel-editing", "critique", "novel", "editing"]
 
-# 自定义匹配规则
+# ====== 特定领域工具匹配规则 ======
+# 只有特定领域的工具才需要配置规则，通用工具不需要
+
 rules:
-  # 工具名称 → 匹配标签
+  # ====== 前端领域 ======
   "frontend-design": ["frontend", "design"]
   "playwright": ["verification", "frontend"]
-  "memory": ["*"]  # * 表示所有人
-  "search": ["*"]
-  "lark-*": ["*"]
+  "ui-ux-pro-max": ["design", "ui", "ux", "frontend"]
+  "web-design-guidelines": ["design", "frontend", "verification"]
+  "vercel-composition-patterns": ["frontend", "architecture"]
+  "vercel-react-best-practices": ["frontend", "architecture"]
+  "vercel-react-native-skills": ["frontend", "react-native"]
 
-  # ====== novel-writer-skills 分配规则 ======
-  # 去AI味
-  "requirement-detector": ["novel-writing", "novel"]
-  # 风格检测
-  "style-detector": ["novel-writing", "novel"]
-  # 类型检测
-  "setting-detector": ["novel-writing", "novel"]
-  # 一致性检查
-  "story-consistency-monitor": ["novel-writing", "novel"]
-  # 对话技巧
-  "natural-dialogue-techniques": ["novel-writing", "novel", "editing"]
-  # 场景结构
-  "scene-structure-techniques": ["novel-writing", "novel"]
-  # 预写作检查
-  "pre-write-checklist": ["novel-writing", "novel"]
+  # ====== 数据库领域 ======
+  "supabase": ["backend", "database"]
+  "neon": ["backend", "database"]
+  "clerk": ["backend", "auth"]
+
+  # ====== 小说领域 - AINovelAssist ======
+  "requirement-detector": ["novel-writing"]
+  "style-detector": ["novel-writing"]
+  "setting-detector": ["novel-writing"]
+  "story-consistency-monitor": ["novel-writing"]
+  "natural-dialogue-techniques": ["novel-writing"]
+  "scene-structure-techniques": ["novel-writing"]
+  "pre-write-checklist": ["novel-writing"]
+  "novel-writer-workflow-guide": ["novel-writing"]
+  "fantasy-world-building": ["novel-writing"]
+  "mystery-novel-conventions": ["novel-writing"]
+  "romance-novel-conventions": ["novel-writing"]
+  "getting-started-guide": ["novel-writing"]
+
+  # ====== 小说领域 - AINovelEditorCritic ======
+  "forgotten-elements-reminder": ["novel-editing", "critique"]
+
+  # ====== 代码审查 ======
+  "google-gemini-code-reviewer": ["coder", "architect", "qa", "frontend"]
 
 # 排除的工具（不分配）
 exclude:
-  - "chrome-cdp"  # 与 playwright 重复
+  - "chrome-cdp"  # 与 playwright 重复，不单独分配
 
-# ====== 本地专用配置（不提交到GitHub）======
-# 本地配置文件：tool-allocator.config.local.yaml
-# 此文件仅用于本地，不推送到远程仓库
-
-# 读取本地覆盖配置（如果存在）
-# local-overrides:
-#   - "tool-allocator.config.local.yaml"
+# 说明：
+# - 通用型工具（memory, one-search, cocoloop, persistent-memory, tool-allocator, url-capability-analyzer）默认对主 agent 可用
+# - 飞书工具（lark-*）根据业务需求由主 agent 决定分配给哪个 Agent

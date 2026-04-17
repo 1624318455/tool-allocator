@@ -154,23 +154,23 @@ const VERB_TO_ROLE = {
 // 能力到角色的映射（工具能力 → 应该分配给的 Agent 角色）
 // 优先级：专一角色 > 多角色 > 全局
 const CAPABILITY_TO_AGENT = {
-    // 前端/设计 → 主要 designer，次要 frontend
-    'frontend': ['designer', 'frontend'],
-    'ui': ['designer'],
-    'design': ['designer'],
-    'web': ['designer', 'frontend'],
+    // 前端/设计 → 主要 designer，次要 coder, frontend
+    'frontend': ['designer', 'frontend', 'coder'],
+    'ui': ['designer', 'frontend', 'coder'],
+    'design': ['designer', 'frontend', 'coder'],
+    'web': ['designer', 'frontend', 'coder'],
     
     // React → 主要 frontend/coder
     'react': ['frontend', 'coder'],
     'nextjs': ['frontend', 'coder'],
     'mobile': ['frontend', 'coder'],
-    'component': ['frontend', 'designer'],
+    'component': ['frontend', 'designer', 'coder'],
     
-    // 测试/调试 → 主要 qa，次要 coder
-    'testing': ['qa', 'coder'],
-    'verification': ['qa', 'coder'],
-    'debug': ['qa', 'coder'],
-    'browser': ['qa', 'frontend'],
+    // 测试/调试 → 主要 qa， 次要 coder, designer
+    'testing': ['qa', 'coder', 'designer'],
+    'verification': ['qa', 'coder', 'designer'],
+    'debug': ['qa', 'coder', 'designer'],
+    'browser': ['qa', 'frontend', 'designer'],
     
     // 分析/研究 → 主要 ba/analyst
     'summarize': ['ba'],
@@ -506,11 +506,105 @@ function getToolCapabilities(toolName) {
     return [];
 }
 
+// 角色到标签的映射（用于 config rules 匹配）
+const ROLE_TO_TAG = {
+    'designer': ['design', 'ui', 'ux', 'frontend'],
+    'frontend': ['frontend', 'react', 'nextjs', 'web'],
+    'coder': ['coder', 'code', 'coding', 'developer'],
+    'developer': ['developer', 'code', 'coding'],
+    'architect': ['architect', 'architecture', 'technical'],
+    'ba': ['ba', 'business', 'analyst', 'requirement'],
+    'analyst': ['analyst', 'analysis', 'research'],
+    'qa': ['qa', 'test', 'verification'],
+    '*': ['*']
+};
+
+// 根据配置规则标签匹配工具到 Agent
+function matchByRuleTags(toolName, ruleTags, agentAnalysisResults) {
+    const recommendations = [];
+    
+    console.log(`[matchByRuleTags] ${toolName} - ruleTags: ${JSON.stringify(ruleTags)}`);
+    console.log(`[matchByRuleTags] Agents count: ${Object.keys(agentAnalysisResults).length}`);
+    
+    for (const [agentName, agent] of Object.entries(agentAnalysisResults)) {
+        // 构建 Agent 的所有标签（从角色映射）
+        const agentTags = new Set();
+        if (agent.roles) {
+            for (const role of agent.roles) {
+                if (ROLE_TO_TAG[role]) {
+                    ROLE_TO_TAG[role].forEach(t => agentTags.add(t));
+                }
+            }
+        }
+        
+        console.log(`[matchByRuleTags] Checking agent: ${agentName}`);
+        console.log(`[matchByRuleTags]   roles: ${JSON.stringify(agent.roles)}`);
+        console.log(`[matchByRuleTags]   tags: ${JSON.stringify([...agentTags])}`);
+        
+        // 检查规则标签
+        const matched = ruleTags.some(tag => {
+            if (tag === '*') return true;
+            // 1. 直接匹配 role
+            if (agent.roles && agent.roles.includes(tag)) return true;
+            // 2. 匹配映射后的 tag
+            if (agentTags.has(tag.toLowerCase())) return true;
+            // 3. 部分名称匹配
+            if (agent.name.toLowerCase().includes(tag.toLowerCase())) return true;
+            return false;
+        });
+        
+        console.log(`[matchByRuleTags]   matched: ${matched}`);
+        
+        if (matched) {
+            const score = ruleTags.includes('*') ? 100 : 20;
+            recommendations.push({
+                agent: agent.name,
+                reason: `规则匹配: ${ruleTags.join(', ')}`,
+                confidence: 'high',
+                score: score
+            });
+        }
+    }
+    
+    console.log(`[matchByRuleTags] ${toolName} recommendations: ${recommendations.length}`);
+    return recommendations;
+}
+
 // 匹配工具到 Agent（使用多维度分析）
 function matchToolToAgents(tool, agentAnalysisResults, config = {}) {
     const recommendations = [];
     const toolName = tool.name || '';
     const toolCapabilities = getToolCapabilities(toolName);
+    const configRules = config.rules || {};
+    
+    // 优先使用 config 中定义的显式规则（去掉 key 中的引号）
+    const cleanKey = toolName.replace(/^["']|["']$/g, '');
+    
+    // DEBUG: 打印调试信息
+    if (toolName === 'frontend-design' || toolName === 'memory' || toolName === 'playwright') {
+        console.log(`[DEBUG ${toolName}] cleanKey: "${cleanKey}"`);
+        for (const [ruleKey, ruleTags] of Object.entries(configRules)) {
+            const cleanRuleKey = ruleKey.replace(/^["']|["']$/g, '');
+            const match = (cleanRuleKey === cleanKey || cleanRuleKey === toolName);
+            console.log(`[DEBUG ${toolName}]   ruleKey: "${ruleKey}" -> cleanRuleKey: "${cleanRuleKey}", match: ${match}`);
+        }
+    }
+    
+    for (const [ruleKey, ruleTags] of Object.entries(configRules)) {
+        const cleanRuleKey = ruleKey.replace(/^["']|["']$/g, '');
+        if (cleanRuleKey === cleanKey || cleanRuleKey === toolName) {
+            console.log(`[MATCH] ${toolName} matched rule: ${ruleKey}`);
+            return matchByRuleTags(toolName, ruleTags, agentAnalysisResults);
+        }
+    }
+    
+    // 通配符规则匹配
+    for (const [ruleKey, ruleTags] of Object.entries(configRules)) {
+        const cleanRuleKey = ruleKey.replace(/^["']|["']$/g, '');
+        if (cleanRuleKey.includes('*') && toolName.startsWith(cleanRuleKey.replace('*', ''))) {
+            return matchByRuleTags(toolName, ruleTags, agentAnalysisResults);
+        }
+    }
     
     if (toolCapabilities.length === 0) {
         return recommendations; // 未知工具，不分配
@@ -623,19 +717,34 @@ function matchAllTools(analyzedTools, agentAnalysisResults, config = {}) {
 }
 
 // 检查闲置工具
-function findUnusedTools(matchedTools) {
+function findUnusedTools(matchedTools, config = {}) {
     const unused = [];
     const used = [];
-
+    const configRules = config.rules || {};
+    
     for (const item of matchedTools) {
-        if (item.recommendations.length === 0) {
+        // 如果有匹配结果，直接认为已使用
+        if (item.recommendations.length > 0) {
+            used.push(item);
+            continue;
+        }
+        
+        // 没有匹配结果时，检查是否是已知工具（通过 configRules 或 TOOL_KEYWORDS）
+        const toolName = item.tool;
+        const isKnownTool = configRules[toolName] || getToolCapabilities(toolName).length > 0;
+        
+        if (isKnownTool) {
+            // 已知工具但未匹配到 Agent - 这可能是误报（Agent 分析问题），不计入 unused
+            // 但为了调试目的，记录一下
+            console.log(`   [DEBUG] ${toolName} - 有能力标签但未匹配到 Agent (可能是 Agent 角色分析问题)`);
+            used.push(item);
+        } else {
+            // 真正未知的工具
             unused.push({
                 tool: item.tool,
                 type: item.type,
-                reason: '没有匹配的 Agent'
+                reason: '未知工具'
             });
-        } else {
-            used.push(item);
         }
     }
 

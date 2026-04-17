@@ -5,6 +5,19 @@ All notable changes to tool-allocator will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-04-18
+
+### Added
+- Generic vs Domain-specific principle:
+  - Generic tools (memory, one-search, cocoloop, etc.) = "Swiss Army knives" - main agent can use directly
+  - Domain-specific tools need allocation to sub-agents (novel-writer-skills → AINovelAssist)
+- Removed `"*": everyone` rules from config - generic tools don't need allocation rules
+- Added gotcha: "Don't force allocation for generic tools"
+
+### Changed
+- Simplified config.yaml: only domain-specific rules remain
+- Updated SKILL.md Allocation Rules section with two-type classification
+
 ## [1.3.0] - 2026-04-18
 
 ### Added

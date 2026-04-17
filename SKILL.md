@@ -1,51 +1,6 @@
 ---
 name: tool-allocator
-description: |
-  Automatically manages MCP/Skill distribution across agents. Use when: 
-  installing new MCP/Skill and needing allocation ("allocate new tool", "assign skill to agent"),
-  checking tool usage ("which tools are unused", "tools not being used", "unused tools"),
-  viewing available tools ("show me what tools", "what tools does", "tool distribution", "who has access to"),
-  reviewing who uses which tool ("tool allocation", "check agent capabilities", "what can AICA do"),
-  syncing allocations after installing new skill ("sync tool allocation", "update tool distribution"),
-  or managing agent tool access ("assign tools to", "which agent has", "tool permissions").
-version: 1.3
-created: 2026-04-18
-modified: 2026-04-18
-tags: [opencode, tool-management, agent, workflow, automation, configuration]
-author: memeflyfly
-license: MIT
-repository: https://github.com/memeflyfly/tool-allocator
-bugs: https://github.com/memeflyfly/tool-allocator/issues
-homepage: https://github.com/memeflyfly/tool-allocator
-works-with:
-  - opencode
-  - claude-code
-  - cursor
-capabilities:
-  - tool-discovery
-  - agent-analysis
-  - config-management
-  - allocation-sync
-keywords:
-  - mcp allocation
-  - skill distribution
-  - agent tools
-  - tool management
-  - tool allocation
-  - agent configuration
-categories:
-  - automation
-  - configuration
-  - tooling
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
-  - filesystem_list_directory
-  - filesystem_read_file
+description: Use when managing MCP or Skill installation across agents, checking which tools are unused, viewing tool allocation by agent, or syncing tool distribution after installing new skills.
 ---
 
 # Tool Allocator
@@ -189,12 +144,24 @@ exclude:
 
 ## Allocation Rules
 
+### Two Types of Tools
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **Generic** | Available to main agent (OpenCode), no allocation needed | memory, one-search, cocoloop, persistent-memory, tool-allocator, url-capability-analyzer |
+| **Domain-specific** | Allocated to specific sub-agents based on domain | playwright → frontend agents, novel-writer-skills → AINovelAssist |
+
+### Matching Examples
+
 | Tool Capability | Matches | Example |
 |-----------------|---------|---------|
-| `frontend` | `frontend`, `design` | Coder, Designer |
-| `verification` | `verification`, `frontend` | Coder, Architect |
-| `design` | `design`, `ui-ux` | Designer |
-| `*` | everyone | memory, search |
+| `frontend` | `frontend`, `design` | AIUIUX, AITA, AICA |
+| `verification` | `verification`, `frontend` | AITA, AICA |
+| `design` | `design`, `ui-ux` | AIUIUX |
+| `novel-writing` | novel domain | AINovelAssist |
+| `novel-editing` | critique domain | AINovelEditorCritic |
+
+> ⚠️ Don't use `*` for generic tools - they don't need allocation. Only configure domain-specific rules. |
 
 ---
 
@@ -207,6 +174,7 @@ exclude:
 - **Glob/Search patterns are case-sensitive** - Match exact tool names
 - **Backups use .bak extension** - Don't confuse with original files
 - **Don't allocate by name alone** - Decision process: (1) Read SKILL.md description to understand actual domain; (2) Check provider (google-gemini → code, novel-writer → novel); (3) Match to agent's core responsibility. Example: requirement-detector (novel domain) ≠ BA tool, google-gemini-code-reviewer (code domain) = AITA/AICA.
+- **Don't force allocation for generic tools** - Tools like memory, one-search, cocoloop, persistent-memory, tool-allocator, url-capability-analyzer are "Swiss Army knives" - main agent can use them directly. Only domain-specific tools need allocation.
 
 ## Edge Cases
 
@@ -231,6 +199,7 @@ exclude:
 | 1.3 | 2026-04-18 | Added gotchas, edge cases, capabilities, keywords |
 | 1.3.1 | 2026-04-18 | Fixed: Don't allocate by name alone - check actual tool functionality |
 | 1.3.2 | 2026-04-18 | Distribution: 14 unused tools allocated + decision process improved |
+| 1.4.0 | 2026-04-18 | Generic vs domain-specific principle - don't force allocation for generic tools |
 
 ---
 
