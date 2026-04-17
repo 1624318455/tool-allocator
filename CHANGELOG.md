@@ -20,8 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved trigger phrase coverage for better AI activation
 
 ### Fixed
-- Added gotcha: "Don't allocate by name alone" - warns against allocating based on tool name without checking actual functionality
-- Added edge case: "Tools named with generic terms" - warns against assuming tools like requirement-detector are BA tools just because they sound like it
+- Added gotcha: "Don't allocate by name alone" - decision process: Read SKILL.md → Check provider → Match to agent responsibility
+- Added edge case: "Tools with misleading names" - read description + check provider to avoid misallocation
+
+### Distribution
+- Allocated 14 unused tools to appropriate agents:
+  - AINovelAssist: 12 novel-writing skills
+  - AINovelEditorCritic: 2 critique skills
+  - AITA/AICA: code-review skill
 
 ## [1.2.0] - 2026-04-18
 

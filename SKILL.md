@@ -206,7 +206,7 @@ exclude:
 - **Sync only updates "## Tools" section** - Preserves all other content in agent MD files
 - **Glob/Search patterns are case-sensitive** - Match exact tool names
 - **Backups use .bak extension** - Don't confuse with original files
-- **Don't allocate by name alone** - "detector" ≠ BA, "frontend" ≠ designer. Always check the actual skill functionality and domain before allocating. Example: requirement-detector/style-detector are for novel-writing, not general BA work.
+- **Don't allocate by name alone** - Decision process: (1) Read SKILL.md description to understand actual domain; (2) Check provider (google-gemini → code, novel-writer → novel); (3) Match to agent's core responsibility. Example: requirement-detector (novel domain) ≠ BA tool, google-gemini-code-reviewer (code domain) = AITA/AICA.
 
 ## Edge Cases
 
@@ -217,7 +217,7 @@ exclude:
 - **MCP with no tools listed** → Skip MCP, continue with others
 - **Skill without SKILL.md** → Use folder name as fallback identifier
 - **Duplicate tool names** → First discovered takes precedence
-- **Tools named with generic terms** → Don't assume! Tools like "requirement-detector" or "style-detector" seem like BA/UX tools by name, but check their actual domain. requirement-detector/style-detector are for novel-writing, not general analysis.
+- **Tools with misleading names** → Read description + check provider. "detector" sounds like BA but requirement-detector is for novels; "google-gemini" is code-related even though it could be used for novels.
 
 ---
 
@@ -230,6 +230,7 @@ exclude:
 | 1.2 | 2026-04-18 | Added metadata, references structure |
 | 1.3 | 2026-04-18 | Added gotchas, edge cases, capabilities, keywords |
 | 1.3.1 | 2026-04-18 | Fixed: Don't allocate by name alone - check actual tool functionality |
+| 1.3.2 | 2026-04-18 | Distribution: 14 unused tools allocated + decision process improved |
 
 ---
 

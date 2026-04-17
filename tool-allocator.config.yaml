@@ -42,15 +42,37 @@ exclude:
   - "chrome-cdp"  # 与 playwright 重复
 
 # ====== 小说Agent专用规则 ======
-# AINovelAssist 专用 Skills
+# AINovelAssist 专用 Skills - 小说创作
 novel-agent-skills:
   AINovelAssist:
+    # 需求/规范探测
     - "requirement-detector"
+    # 风格探测
     - "style-detector"
+    # 设定探测
     - "setting-detector"
+    # 一致性检查
     - "story-consistency-monitor"
+    # 对话技巧
     - "natural-dialogue-techniques"
+    # 场景结构
     - "scene-structure-techniques"
+    # 预写作检查
+    - "pre-write-checklist"
+    # 小说类型规范
+    - "fantasy-world-building"
+    - "mystery-novel-conventions"
+    - "romance-novel-conventions"
+    # 工作流
+    - "novel-writer-workflow-guide"
+    - "getting-started-guide"
   AINovelEditorCritic:
-    - "requirement-detector"
+    # 审查类
     - "story-consistency-monitor"
+    - "forgotten-elements-reminder"
+  AITA:
+    # 代码审查
+    - "google-gemini-code-reviewer"
+  AICA:
+    # 代码审查
+    - "google-gemini-code-reviewer"
