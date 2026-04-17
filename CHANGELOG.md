@@ -12,12 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `capabilities` field with tool capability tags
   - `keywords` field for search optimization
   - `categories` field for classification
-- **Common Gotchas** section in SKILL.md (6 items)
-- **Edge Cases** section in SKILL.md (7 items)
+- **Common Gotchas** section in SKILL.md (6 items → 7 items)
+- **Edge Cases** section in SKILL.md (7 items → 8 items)
 
 ### Changed
 - Expanded description field with multiple trigger phrase variants
 - Improved trigger phrase coverage for better AI activation
+
+### Fixed
+- Added gotcha: "Don't allocate by name alone" - warns against allocating based on tool name without checking actual functionality
+- Added edge case: "Tools named with generic terms" - warns against assuming tools like requirement-detector are BA tools just because they sound like it
 
 ## [1.2.0] - 2026-04-18
 

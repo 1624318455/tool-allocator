@@ -5,6 +5,13 @@ agents:
   - name: "Agent名称"
     tags: ["frontend", "backend", "verification"]
 
+# ====== 小说Agent匹配规则 ======
+  - name: "AINovelAssist"
+    tags: ["novel", "writing", "novel-writing"]
+
+  - name: "AINovelEditorCritic"
+    tags: ["novel", "editing", "critique"]
+
 # 自定义匹配规则
 rules:
   # 工具名称 → 匹配标签
@@ -14,6 +21,36 @@ rules:
   "search": ["*"]
   "lark-*": ["*"]
 
+  # ====== novel-writer-skills 分配规则 ======
+  # 去AI味
+  "requirement-detector": ["novel-writing", "novel"]
+  # 风格检测
+  "style-detector": ["novel-writing", "novel"]
+  # 类型检测
+  "setting-detector": ["novel-writing", "novel"]
+  # 一致性检查
+  "story-consistency-monitor": ["novel-writing", "novel"]
+  # 对话技巧
+  "natural-dialogue-techniques": ["novel-writing", "novel", "editing"]
+  # 场景结构
+  "scene-structure-techniques": ["novel-writing", "novel"]
+  # 预写作检查
+  "pre-write-checklist": ["novel-writing", "novel"]
+
 # 排除的工具（不分配）
 exclude:
   - "chrome-cdp"  # 与 playwright 重复
+
+# ====== 小说Agent专用规则 ======
+# AINovelAssist 专用 Skills
+novel-agent-skills:
+  AINovelAssist:
+    - "requirement-detector"
+    - "style-detector"
+    - "setting-detector"
+    - "story-consistency-monitor"
+    - "natural-dialogue-techniques"
+    - "scene-structure-techniques"
+  AINovelEditorCritic:
+    - "requirement-detector"
+    - "story-consistency-monitor"

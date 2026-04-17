@@ -206,6 +206,7 @@ exclude:
 - **Sync only updates "## Tools" section** - Preserves all other content in agent MD files
 - **Glob/Search patterns are case-sensitive** - Match exact tool names
 - **Backups use .bak extension** - Don't confuse with original files
+- **Don't allocate by name alone** - "detector" ≠ BA, "frontend" ≠ designer. Always check the actual skill functionality and domain before allocating. Example: requirement-detector/style-detector are for novel-writing, not general BA work.
 
 ## Edge Cases
 
@@ -216,6 +217,7 @@ exclude:
 - **MCP with no tools listed** → Skip MCP, continue with others
 - **Skill without SKILL.md** → Use folder name as fallback identifier
 - **Duplicate tool names** → First discovered takes precedence
+- **Tools named with generic terms** → Don't assume! Tools like "requirement-detector" or "style-detector" seem like BA/UX tools by name, but check their actual domain. requirement-detector/style-detector are for novel-writing, not general analysis.
 
 ---
 
@@ -227,6 +229,7 @@ exclude:
 | 1.1 | 2026-04-18 | English rewrite |
 | 1.2 | 2026-04-18 | Added metadata, references structure |
 | 1.3 | 2026-04-18 | Added gotchas, edge cases, capabilities, keywords |
+| 1.3.1 | 2026-04-18 | Fixed: Don't allocate by name alone - check actual tool functionality |
 
 ---
 
