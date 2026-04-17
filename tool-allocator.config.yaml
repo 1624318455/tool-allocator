@@ -5,13 +5,6 @@ agents:
   - name: "Agent名称"
     tags: ["frontend", "backend", "verification"]
 
-# ====== 小说Agent匹配规则 ======
-  - name: "AINovelAssist"
-    tags: ["novel", "writing", "novel-writing"]
-
-  - name: "AINovelEditorCritic"
-    tags: ["novel", "editing", "critique"]
-
 # 自定义匹配规则
 rules:
   # 工具名称 → 匹配标签
@@ -21,58 +14,6 @@ rules:
   "search": ["*"]
   "lark-*": ["*"]
 
-  # ====== novel-writer-skills 分配规则 ======
-  # 去AI味
-  "requirement-detector": ["novel-writing", "novel"]
-  # 风格检测
-  "style-detector": ["novel-writing", "novel"]
-  # 类型检测
-  "setting-detector": ["novel-writing", "novel"]
-  # 一致性检查
-  "story-consistency-monitor": ["novel-writing", "novel"]
-  # 对话技巧
-  "natural-dialogue-techniques": ["novel-writing", "novel", "editing"]
-  # 场景结构
-  "scene-structure-techniques": ["novel-writing", "novel"]
-  # 预写作检查
-  "pre-write-checklist": ["novel-writing", "novel"]
-
 # 排除的工具（不分配）
 exclude:
   - "chrome-cdp"  # 与 playwright 重复
-
-# ====== 小说Agent专用规则 ======
-# AINovelAssist 专用 Skills - 小说创作
-novel-agent-skills:
-  AINovelAssist:
-    # 需求/规范探测
-    - "requirement-detector"
-    # 风格探测
-    - "style-detector"
-    # 设定探测
-    - "setting-detector"
-    # 一致性检查
-    - "story-consistency-monitor"
-    # 对话技巧
-    - "natural-dialogue-techniques"
-    # 场景结构
-    - "scene-structure-techniques"
-    # 预写作检查
-    - "pre-write-checklist"
-    # 小说类型规范
-    - "fantasy-world-building"
-    - "mystery-novel-conventions"
-    - "romance-novel-conventions"
-    # 工作流
-    - "novel-writer-workflow-guide"
-    - "getting-started-guide"
-  AINovelEditorCritic:
-    # 审查类
-    - "story-consistency-monitor"
-    - "forgotten-elements-reminder"
-  AITA:
-    # 代码审查
-    - "google-gemini-code-reviewer"
-  AICA:
-    # 代码审查
-    - "google-gemini-code-reviewer"
