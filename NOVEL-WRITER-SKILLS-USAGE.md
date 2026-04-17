@@ -131,8 +131,27 @@ novel-agent-skills:
 
 ---
 
+## ⚠️ 重要：个人信息保护
+
+### 已执行的操作
+
+| 操作 | 状态 |
+|------|------|
+| 回滚 GitHub 上的个人配置 | ✅ 已推送 |
+| 本地保留个人配置 | ✅ 仅本地使用 |
+| 上传文件忽略个人配置 | ✅ 已添加到 .gitignore |
+
+### 本地配置文件
+
+本地配置保存在：
+- `tool-allocator.config.yaml`（当前使用，包含你的个人配置）
+
+这个文件**不会**被推送到 GitHub（因为已经是干净版本）。
+
+---
+
 ## 联系信息
 
 如有问题，检查：
 - Skills 安装位置：`~/.opencode/skills/.agents/skills/`
-- tool-allocator 配置：`~/.opencode/skills/tool-allocator/tool-allocator.config.yaml`
+- tool-allocator 配置：`~/.opencode/skills/tool-allocator/tool-allocator.config.yaml`（本地使用）
